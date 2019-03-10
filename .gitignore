@@ -1,0 +1,3 @@
+ssh_config.json
+*.swp
+__pycache__
