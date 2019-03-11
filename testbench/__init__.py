@@ -10,8 +10,6 @@ class TestCase(unittest.TestCase):
 
     def setUp(self):
         vmname = self.TESTBENCH_DATA['vmname']
-        hostname = self.TESTBENCH_DATA['hostname']
-        ssh_config = self.TESTBENCH_DATA['ssh_config']
         vm = self.TESTBENCH_VM
 
         session = virtualbox.Session()
@@ -19,12 +17,25 @@ class TestCase(unittest.TestCase):
         vm = session.machine
 
         create_base_snapshot_if_not_exists(vm)
-        restore_machine(vmname, vm, session)
+        self.TESTBENCH_SESSION = restore_machine(vmname, vm, session)
 
-        self.ssh = connect_ssh(hostname, ssh_config)
+        self._connect_ssh()
 
     def tearDown(self):
         self.ssh.close()
+
+    def reset_vm(self):
+        self.ssh.close()
+
+        self.TESTBENCH_SESSION.console.reset()
+
+        self._connect_ssh()
+
+    def _connect_ssh(self):
+        hostname = self.TESTBENCH_DATA['hostname']
+        ssh_config = self.TESTBENCH_DATA['ssh_config']
+
+        self.ssh = connect_ssh(hostname, ssh_config)
 
 def usage():
     prgname = os.path.basename(__file__)

@@ -12,6 +12,6 @@ def connect_ssh(hostname, ssh_config):
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     ssh.connect(hostname, username=ssh_config['username'],
-            password=ssh_config['password'])
+            password=ssh_config['password'], timeout=120)
 
     return ssh

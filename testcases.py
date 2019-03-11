@@ -25,6 +25,12 @@ class TestVirtualMachine(testbench.TestCase):
         result = stdout.read().decode("utf-8").strip()
         self.assertEqual(result, "active")
 
+    def test_service_is_running_after_reboot(self):
+        self.reset_vm()
+        stdin, stdout, stderr = self.ssh.exec_command("systemctl is-active apache2")
+        result = stdout.read().decode("utf-8").strip()
+        self.assertEqual(result, "active")
+
 
 if __name__ == "__main__":
     testbench.main()

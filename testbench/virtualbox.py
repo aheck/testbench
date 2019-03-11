@@ -72,3 +72,5 @@ def restore_machine(vm_name, vm, session):
 
     progress = vm.launch_vm_process(session, 'gui', '')
     progress.wait_for_completion(10000)
+
+    return session
