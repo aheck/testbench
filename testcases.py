@@ -12,13 +12,19 @@ from virtualbox.library import SessionState
 
 class TestVirtualMachine(testbench.TestCase):
 
-    def test_something(self):
-        print(self.TESTBENCH_DATA)
-        stdin, stdout, stderr = self.ssh.exec_command('touch unittest_was_here.txt')
+    def test_binary_exists(self):
+        sftp = self.ssh.open_sftp()
+        filename = "/usr/sbin/apache2"
+        try:
+            sftp.stat(filename)
+        except FileNotFoundError:
+            self.fail("File does not exist: %s" % (filename))
 
-    def test_more(self):
-        pass
+    def test_service_is_running(self):
+        stdin, stdout, stderr = self.ssh.exec_command("systemctl is-active apache2")
+        result = stdout.read().decode("utf-8").strip()
+        self.assertEqual(result, "active")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     testbench.main()
