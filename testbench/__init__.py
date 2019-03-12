@@ -37,29 +37,37 @@ class TestCase(unittest.TestCase):
 
         self.ssh = connect_ssh(hostname, ssh_config)
 
+
 def usage():
     prgname = os.path.basename(__file__)
-    print("Usage: %s VMNAME HOSTNAME" %(prgname))
+    print("Usage: %s VMNAME HOSTNAME [SINGLETEST]" %(prgname))
     print()
     print("Example: %s my_vbox_vm 192.168.0.120" % (prgname))
     print()
     print("Arguments:")
     print()
-    print("  VMNAME:   The name of your VM in VirtualBox")
-    print("  HOSTNAME: The Hostname or IP address of your VM")
+    print("  VMNAME:     The name of your VM in VirtualBox")
+    print("  HOSTNAME:   The Hostname or IP address of your VM")
+    print("  SINGLETEST: Run only this test. Classname AND testname.")
+    print("              E.g.: TestClass.my_test")
     sys.exit(2)
 
+
 def main(ssh_config_filename="ssh_config.json"):
-    if len(sys.argv) != 3:
+    argvlen = len(sys.argv)
+    if argvlen < 3 or argvlen > 4:
         usage()
 
     vmname = sys.argv[1]
     hostname = sys.argv[2]
+    singletest = None
+    if argvlen == 4:
+        singletest = sys.argv[3]
 
     # Remove the command line args so unittest.main() does not try
     # to interpret them
-    sys.argv.pop()
-    sys.argv.pop()
+    for _ in range(argvlen - 1):
+        sys.argv.pop()
 
     try:
         vbox = virtualbox.VirtualBox()
@@ -81,4 +89,6 @@ def main(ssh_config_filename="ssh_config.json"):
         del test_class
 
     sys.argv.append("-v")
+    if singletest:
+        sys.argv.append(singletest)
     unittest.main()
