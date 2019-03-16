@@ -3,6 +3,9 @@ from testbench.ssh import *
 
 import unittest
 
+import socket
+import time
+
 import virtualbox
 from virtualbox.library import LockType
 
@@ -22,20 +25,48 @@ class TestCase(unittest.TestCase):
         self._connect_ssh()
 
     def tearDown(self):
-        self.ssh.close()
+        self._disconnect_ssh()
 
     def reset_vm(self):
-        self.ssh.close()
+        self._disconnect_ssh()
 
         self.TESTBENCH_SESSION.console.reset()
 
-        self._connect_ssh()
+        hostname = self.TESTBENCH_DATA['hostname']
 
-    def _connect_ssh(self):
+        self._connect_ssh(wait=True)
+
+    def _connect_ssh(self, wait=False):
         hostname = self.TESTBENCH_DATA['hostname']
         ssh_config = self.TESTBENCH_DATA['ssh_config']
 
-        self.ssh = connect_ssh(hostname, ssh_config)
+        # wait until the SSH port on the VM is ready
+        if wait:
+            i = 0
+            while True:
+                i += 1
+                if i > 30:
+                    raise Exception("SSH port %d didn't come up",
+                            ssh_config['port'])
+
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.settimeout(1)
+                result = sock.connect_ex((hostname, int(ssh_config['port'])))
+                if result != 0:
+                    sock.close()
+                    time.sleep(10)
+                else:
+                    sock.close()
+                    break
+
+        (self.ssh, self.port_forwards, self._servers) = connect_ssh(hostname, ssh_config)
+
+    def _disconnect_ssh(self):
+        # terminate the port forwardings
+        for server in self._servers:
+            server.server_close()
+
+        self.ssh.close()
 
 
 def usage():
