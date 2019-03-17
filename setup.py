@@ -9,4 +9,9 @@ setup(name='testbench',
       license='MIT',
       packages=['testbench'],
       install_requires = ['pyvbox', 'paramiko'],
-      zip_safe=False)
+      classifiers=[
+          "Programming Language :: Python :: 3",
+          "License :: OSI Approved :: MIT License",
+          "Operating System :: OS Independent",
+      ]
+)

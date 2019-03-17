@@ -9,6 +9,8 @@ import time
 import virtualbox
 from virtualbox.library import LockType
 
+name = "testbench"
+
 class TestCase(unittest.TestCase):
 
     def setUp(self):
