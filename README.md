@@ -110,10 +110,10 @@ connection to your VM.
 
 ![Base Snapshot in VirtualBox](/pics/vbox-snapshots.png)
 
-## License ##
+# License #
 
 TestBench is licensed under the MIT license.
 
-## Contact ##
+# Contact #
 
 Andreas Heck <<aheck@gmx.de>>
