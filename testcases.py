@@ -1,15 +1,7 @@
 #!/usr/bin/env python3
 
-import sys
-import os.path
 import testbench
 import socket
-import unittest
-
-import virtualbox
-from virtualbox.library import MachineState
-from virtualbox.library import LockType
-from virtualbox.library import SessionState
 
 class TestVirtualMachine(testbench.TestCase):
 
