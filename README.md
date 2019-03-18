@@ -17,10 +17,15 @@ pip3 install testbench
 Create a Linux VM in VirtualBox and install all the basic software you want to
 have available in all of your tests.
 
+Your VM must have a virtual network interface that is bridged to the network
+of your host machine and there must be a SSH server up and running. We will
+later use this interface to connect to your VM via SSH so your tests can
+instrument the VM.
+
 ## Configure SSH ##
 
-Create directory where you want to put your tests in (e.g. integration_tests).
-Now go to this directory and create a file name ssh_config.json with the
+Create a directory where you want to put your tests in (e.g. integration_tests).
+Now go to this directory and create a file named ssh_config.json with the
 following contents:
 
 ```json
