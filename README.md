@@ -1,8 +1,10 @@
 # TestBench #
 
 TestBench is a micro-framework for integration testing with VirtualBox and SSH.
-It is built on top of Pythons well-known unittest module and the popular
-Paramiko SSH library.
+
+It is built on top of Pythons well-known unittest module and it uses the
+popular Paramiko SSH library to give tests access to the VM where the software
+to be tested runs on.
 
 # Installation #
 
