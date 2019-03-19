@@ -36,30 +36,34 @@ class TestCase(unittest.TestCase):
 
         hostname = self.TESTBENCH_DATA['hostname']
 
-        self._connect_ssh(wait=True)
+        self._connect_ssh()
 
-    def _connect_ssh(self, wait=False):
+    def _wait_for_ssh_port(self, hostname, ssh_config):
+        """Wait until the SSH port on the VM is ready"""
+        i = 0
+
+        while True:
+            i += 1
+            if i > 30:
+                raise Exception("SSH port %d didn't come up",
+                        ssh_config['port'])
+
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(1)
+            result = sock.connect_ex((hostname, int(ssh_config['port'])))
+            if result != 0:
+                sock.close()
+                time.sleep(10)
+            else:
+                sock.close()
+                break
+
+
+    def _connect_ssh(self):
         hostname = self.TESTBENCH_DATA['hostname']
         ssh_config = self.TESTBENCH_DATA['ssh_config']
 
-        # wait until the SSH port on the VM is ready
-        if wait:
-            i = 0
-            while True:
-                i += 1
-                if i > 30:
-                    raise Exception("SSH port %d didn't come up",
-                            ssh_config['port'])
-
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sock.settimeout(1)
-                result = sock.connect_ex((hostname, int(ssh_config['port'])))
-                if result != 0:
-                    sock.close()
-                    time.sleep(10)
-                else:
-                    sock.close()
-                    break
+        self._wait_for_ssh_port(hostname, ssh_config)
 
         (self.ssh, self.port_forwards, self._servers) = connect_ssh(hostname, ssh_config)
 
