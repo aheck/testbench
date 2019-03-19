@@ -111,12 +111,13 @@ def connect_ssh(hostname, ssh_config):
     # setup all port forwardings
     port_forwards = {}
     servers = []
-    for entry in ssh_config['tunneled_ports']:
-        local_port = generate_random_port()
-        server = forward_local_port(local_port, hostname,
-                entry['port'], ssh.get_transport())
-        servers.append(server)
+    if 'tunneled_ports' in ssh_config:
+        for entry in ssh_config['tunneled_ports']:
+            local_port = generate_random_port()
+            server = forward_local_port(local_port, hostname,
+                    entry['port'], ssh.get_transport())
+            servers.append(server)
 
-        port_forwards[entry['name']] = {'local_port': local_port}
+            port_forwards[entry['name']] = {'local_port': local_port}
 
     return ssh, port_forwards, servers
