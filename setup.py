@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='testbench',
-      version='0.1',
+      version='0.1.1',
       description='Integration Testing with Python and VirtualBox ',
       url='https://github.com/aheck/testbench',
       author='Andreas Heck',
