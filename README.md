@@ -118,7 +118,7 @@ If you want to test a webservice that is served by an Apache webserver running
 on your testing VM you can just access it directly because by default
 Apache listens on all addresses (IPv4 address 0.0.0.0).
 
-But what if you want to connect to a service on a test machine which only listens
+But what if you want to connect to a service on a test VM which only listens
 for connections coming from the local machine (IPv4 address 127.0.0.1)?
 
 MySQL is one such service. For security reasons it only accepts connections from
@@ -135,8 +135,7 @@ tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN
 ```
 
 You can access Apache from your local machine but not MySQL. Of course you could
-reconfigure MySQL to listen for incoming connection attempts from external
-sources.
+reconfigure MySQL to listen for incoming connections from external sources.
 
 But for security reasons it is a good idea to only allow connections that are
 strictly necessary and when testing you want to stay as close to your
@@ -162,7 +161,7 @@ to MySQL on port 3306 on your testing VM whenever it creates an SSH connection
 to the VM.
 
 In your test cases you can fetch the random port number from the dictionary
-self.port_forwards:
+self.port_forwards and use it to connect to MySQL on the testing VM:
 
 ```python
 #!/usr/bin/env python3
