@@ -33,7 +33,7 @@ following contents:
 ```json
 {
     "username": "user",
-    "password": "pass",
+    "password": "password",
     "port": "22",
     "tunneled_ports": [
     ]
@@ -109,6 +109,80 @@ of your tests. It will also make sure that each test has a working SSH
 connection to your VM.
 
 ![Base Snapshot in VirtualBox](/pics/vbox-snapshots.png)
+
+# Advanced Features #
+
+## Port Forwarding ##
+
+If you want to test a webservice that is served by an Apache webserver running
+on your testing VM you can just access it directly because by default
+Apache listens on all addresses (IPv4 address 0.0.0.0).
+
+But what if you want to connect to a service on a test machine which only listens
+for connections coming from the local machine (IPv4 address 127.0.0.1)?
+
+MySQL is one such service. For security reasons it only accepts connections from
+127.0.0.1 by default. If you check for open ports on a testing VM with MySQL
+and Apache installed you might get something like this:
+
+```bash
+~$ netstat -lnt
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp        0      0 127.0.0.1:3306          0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN
+```
+
+You can access Apache from your local machine but not MySQL. Of course you could
+reconfigure MySQL to listen for incoming connection attempts from external
+sources.
+
+But for security reasons it is a good idea to only allow connections that are
+strictly necessary and when testing you want to stay as close to your
+production deployment as possible.
+
+To solve such problems TestBench supports port forwardings. To forward the MySQL
+port on your testing VM to your local machine just add an entry for MySQL to
+your ssh_config.json like in this example:
+
+```json
+{
+    "username": "user",
+    "password": "password",
+    "port": "22",
+    "tunneled_ports": [
+        {"name": "mysql", "port": 3306}
+    ]
+}
+```
+
+TestBench will now create an SSH tunnel from a random port on your local machine
+to MySQL on port 3306 on your testing VM whenever it creates an SSH connection 
+to the VM.
+
+In your test cases you can fetch the random port number from the dictionary
+self.port_forwards:
+
+```python
+#!/usr/bin/env python3
+
+import testbench
+import mysql.connector
+
+class TestVirtualMachine(testbench.TestCase):
+
+    def test_mysql(self):
+        mysql_port = str(self.port_forwards['mysql']['local_port'])
+        conn = mysql.connector.connect(user='user', password='password',
+                              host='127.0.0.1', port=mysql_port
+                              database='testdb')
+        conn.close()
+
+
+if __name__ == "__main__":
+    testbench.main()
+```
 
 # License #
 
