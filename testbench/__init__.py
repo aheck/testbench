@@ -110,7 +110,7 @@ def main(ssh_config_filename="ssh_config.json"):
         vbox = virtualbox.VirtualBox()
         vm = vbox.find_machine(vmname)
     except Exception:
-        print("Couldn't find VirtualBox VM: %s" % (vmname), file=sys.STDERR)
+        print("Couldn't find VirtualBox VM: %s" % (vmname), file=sys.stderr)
         sys.exit(1)
 
     ssh_config = read_ssh_config(ssh_config_filename)
